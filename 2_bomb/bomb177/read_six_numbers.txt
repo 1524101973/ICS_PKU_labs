@@ -1,0 +1,9 @@
+0000000000001d1e <string_length>:
+    1d1e:	f3 0f 1e fa          	endbr64 
+    1d22:	b8 00 00 00 00       	mov    $0x0,%eax
+    1d27:	80 3f 00             	cmpb   $0x0,(%rdi)
+    1d2a:	74 09                	je     1d35 <string_length+0x17>
+    1d2c:	48 83 c7 01          	add    $0x1,%rdi
+    1d30:	83 c0 01             	add    $0x1,%eax
+    1d33:	eb f2                	jmp    1d27 <string_length+0x9>
+    1d35:	c3                   	retq   
