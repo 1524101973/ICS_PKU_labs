@@ -1,0 +1,78 @@
+                            | # Execution begins at address 0 
+0x000:                      | 	.pos 0
+0x000: 30f40002000000000000 | 	irmovq stack, %rsp  	# Set up stack pointer
+0x00a: 804800000000000000   | 	call main		# Execute main program
+0x013: 00                   | 	halt			# Terminate program 
+                            | 
+0x018:                      | .align 8
+0x018:                      | Array:
+0x018: ca0b000000000000     |     .quad 0xbca
+0x020: ba0c000000000000     |     .quad 0xcba
+0x028: cb0a000000000000     |     .quad 0xacb
+0x030: ab0c000000000000     |     .quad 0xcab
+0x038: bc0a000000000000     |     .quad 0xabc
+0x040: ac0b000000000000     |     .quad 0xbac
+                            | 
+0x048:                      | main:	
+0x048: 30f71800000000000000 |     irmovq Array,%rdi # Array in %rdi
+0x052: 30f60600000000000000 |     irmovq $6, %rsi # count in %rsi
+0x05c: 806600000000000000   | 	call bubble_sort
+0x065: 90                   | 	ret
+                            | 
+                            | 
+                            | # long rsum_list(list_ptr ls)
+                            | # start in %rdi
+0x066:                      | bubble_sort:	
+0x066: 30f80800000000000000 |     irmovq $8,%r8        # Constant 8
+                            | 	
+0x070: 6066                 |     addq %rsi, %rsi
+0x072: 6066                 |     addq %rsi, %rsi
+0x074: 6066                 |     addq %rsi, %rsi
+0x076: 6076                 |     addq %rdi, %rsi
+0x078: 6186                 |     subq %r8, %rsi	     # %rsi = last
+0x07a: 6300                 |     xorq %rax,%rax	     # sum = 0
+0x07c: 2079                 | 	rrmovq %rdi, %r9
+0x07e: 6169                 |     subq %rsi, %r9      # Set CC
+0x080: 751e01000000000000   | 	jge     return         # Goto test
+0x089: 2070                 |     rrmovq %rdi, %rax
+0x08b: 2079                 |     rrmovq %rdi, %r9
+0x08d: 6169                 |     subq %rsi, %r9
+0x08f: 72e000000000000000   |     jl      loop3
+0x098: 70a100000000000000   |     jmp     loop1
+                            |     
+0x0a1:                      | loop1:
+                            | #2d
+0x0a1: 6186                 |     subq %r8, %rsi
+0x0a3: 2079                 |     rrmovq %rdi, %r9
+0x0a5: 6169                 |     subq %rsi, %r9
+0x0a7: 751e01000000000000   |     jge     return
+0x0b0: 2070                 |     rrmovq %rdi, %rax
+0x0b2: 2079                 |     rrmovq %rdi, %r9
+0x0b4: 6169                 |     subq %rsi, %r9
+0x0b6: 72e000000000000000   |     jl      loop3
+0x0bf: 70a100000000000000   |     jmp     loop1
+0x0c8:                      | loop2:	
+                            | #f
+0x0c8: 6080                 |     addq %r8, %rax
+0x0ca: 2009                 |     rrmovq %rax, %r9
+0x0cc: 6169                 |     subq %rsi, %r9
+0x0ce: 75a100000000000000   |     jge     loop1
+0x0d7: 70e000000000000000   |     jmp     loop3
+                            | 
+0x0e0:                      | loop3:
+                            | #18
+0x0e0: 50200800000000000000 |     mrmovq 0x8(%rax), %rdx
+0x0ea: 50100000000000000000 |     mrmovq (%rax), %rcx
+0x0f4: 2029                 |     rrmovq %rdx, %r9
+0x0f6: 6119                 |     subq %rcx, %r9
+0x0f8: 75c800000000000000   |     jge     loop2    
+0x101: 40100800000000000000 |     rmmovq %rcx, 0x8(%rax)
+0x10b: 40200000000000000000 |     rmmovq %rdx, (%rax)
+0x115: 70c800000000000000   |     jmp     loop2
+                            | 
+0x11e:                      | return:
+0x11e: 90                   |     ret
+                            | 
+                            | # Stack starts here and grows to lower addresses
+0x200:                      | 	.pos 0x200
+0x200:                      | stack:

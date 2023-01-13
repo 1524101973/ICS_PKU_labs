@@ -1,0 +1,78 @@
+# Execution begins at address 0 
+	.pos 0
+	irmovq stack, %rsp  	# Set up stack pointer
+	call main		# Execute main program
+	halt			# Terminate program 
+
+.align 8
+Array:
+    .quad 0xbca
+    .quad 0xcba
+    .quad 0xacb
+    .quad 0xcab
+    .quad 0xabc
+    .quad 0xbac
+
+main:	
+    irmovq Array,%rdi # Array in %rdi
+    irmovq $6, %rsi # count in %rsi
+	call bubble_sort
+	ret
+
+
+# long rsum_list(list_ptr ls)
+# start in %rdi
+bubble_sort:	
+    irmovq $8,%r8        # Constant 8
+	
+    addq %rsi, %rsi
+    addq %rsi, %rsi
+    addq %rsi, %rsi
+    addq %rdi, %rsi
+    subq %r8, %rsi	     # %rsi = last
+    xorq %rax,%rax	     # sum = 0
+	rrmovq %rdi, %r9
+    subq %rsi, %r9      # Set CC
+	jge     return         # Goto test
+    rrmovq %rdi, %rax
+    rrmovq %rdi, %r9
+    subq %rsi, %r9
+    jl      loop3
+    jmp     loop1
+    
+loop1:
+#2d
+    subq %r8, %rsi
+    rrmovq %rdi, %r9
+    subq %rsi, %r9
+    jge     return
+    rrmovq %rdi, %rax
+    rrmovq %rdi, %r9
+    subq %rsi, %r9
+    jl      loop3
+    jmp     loop1
+loop2:	
+#f
+    addq %r8, %rax
+    rrmovq %rax, %r9
+    subq %rsi, %r9
+    jge     loop1
+    jmp     loop3
+
+loop3:
+#18
+    mrmovq 0x8(%rax), %rdx
+    mrmovq (%rax), %rcx
+    rrmovq %rdx, %r9
+    subq %rcx, %r9
+    jge     loop2    
+    rmmovq %rcx, 0x8(%rax)
+    rmmovq %rdx, (%rax)
+    jmp     loop2
+
+return:
+    ret
+
+# Stack starts here and grows to lower addresses
+	.pos 0x200
+stack:
